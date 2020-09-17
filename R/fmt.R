@@ -38,7 +38,7 @@ fmt <- function(x, fmt = "count", dp = 1){
                 "multi_var", "percent", "fy_abb", "fy_full")) stop("`fmt` must be one of ",
                                                                    paste0(c("count", "rate", "rate_abb",
                                                                             "multi_var", "percent", "fy_abb", "fy_full"), collapse = ", "),
-                                                                           "!")
+                                                                   "!")
 
   if(length(dp) == 1) stop("`dp` must have a length of 1!")
   if(!is.atomic(by) == 0) stop("`x` must be an `atomic` vector!")
@@ -51,7 +51,7 @@ fmt <- function(x, fmt = "count", dp = 1){
   }else if (fmt %in% c("p_val")){
     funx <- function(g){
       paste("= ",formatC(janitor::round_half_up(g,dp), digits = dp, format = "f"), sep="")
-      }
+    }
   }else if(fmt == "fy_abb"){
     funx <- fy(g, fmt = "abb")
   }else if(fmt == "fy_full"){
@@ -65,7 +65,7 @@ fmt <- function(x, fmt = "count", dp = 1){
     janitor::round_half_up(d,dp) < 0.1 & fmt %in% c("rate","rate_abb") ~ "< 0.1",
     janitor::round_half_up(d,dp) < 1 & fmt == "percent" ~ "< 1",
     TRUE ~ funx(d)
-    )
+  )
 
   return(z)
 }

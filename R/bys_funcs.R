@@ -74,7 +74,7 @@ bys_rank <- function(..., by, from_last= F){
 #' bys_tot(by = cat)
 #' @export
 bys_tot <- function(by){
-  if(!is.atomic(by) == 0) stop("`by` must be an `atomic` vector!")
+  if(!is.atomic(by)) stop("`by` must be an `atomic` vector!")
   if(length(by) == 0) stop("`by` has a length of 0!")
 
   by <- match(by, by[!duplicated(by)])

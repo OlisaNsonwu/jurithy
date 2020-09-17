@@ -7,15 +7,15 @@
 fy(x, fmt = "abb")
 }
 \arguments{
-\item{x}{Numerical vector - Financial year. Accepts; 2018, 201819 or 20182019}
+\item{x}{Numerical vector - Financial year. Accepts; 2018, 201819 or 20182019.}
 
-\item{fmt}{Character vector - "abb" or "full". Short hand format e.g. "2018/19" or full description e.g. "April 2018 to March 2019"}
+\item{fmt}{Character vector - "abb" or "full". Short hand format e.g. "2018/19" or full description e.g. "April 2018 to March 2019".}
 }
 \value{
-Character - A description of the financial year
+Character - A description of the financial year.
 }
 \description{
-Favoured formats for labelling financial years
+Favoured formats for labelling financial years.
 }
 \examples{
 
