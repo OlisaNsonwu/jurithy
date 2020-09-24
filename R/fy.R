@@ -22,7 +22,7 @@
 
 fy <- function(x, fmt = "abb"){
   if(!is.atomic(x)) stop("`x` must be an `atomic` vector!")
-  if(length(fmt) != 0) stop("`fmt` must have a length of 1!")
+  if(length(fmt) != 1) stop("`fmt` must have a length of 1!")
   if(fmt %in% c("abb", "full")) stop("`fmt` must be one of ",
                                      paste0(c("abb", "full"), collapse = ", "),"!")
 

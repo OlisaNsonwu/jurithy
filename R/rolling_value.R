@@ -16,7 +16,7 @@
 
 rolling_value <- function(val, by = 12, func = sum){
   if(!is.atomic(val)) stop("`val` must be an `atomic` vector!")
-  if(length(by) != 0) stop("`by` must have a length of 1!")
+  if(length(by) != 1) stop("`by` must have a length of 1!")
   if(!is.function(func)) stop("`func` must have a `function`!")
 
   by <- abs(by)

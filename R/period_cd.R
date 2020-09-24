@@ -20,6 +20,7 @@
 
 period_cd <- function(x, period = "fy"){
   if(!any(class(x) %in% c("Date","POSIXct","POSIXt"))) stop("'x' must be a 'Date', 'POSIXct' or 'POSIXt'!")
+  if(length(period) != 1) stop("`period` must have a length of 1!")
   if(!period %in% c("fy","cy","fq","cq","fm","cm","fd","cd")) stop("'period' must be 'fy', 'cy', 'fq', 'cq', 'fm', 'cm', 'fd' or 'cd'")
   m_l <- as.numeric(format(x, "%m"))
   m <- as.numeric(m_l)
