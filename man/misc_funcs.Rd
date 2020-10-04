@@ -4,11 +4,14 @@
 \alias{misc_funcs}
 \alias{same_len_3dots}
 \alias{len_3dots}
+\alias{atomic_content}
 \title{Miscellaneous functions}
 \usage{
 same_len_3dots(...)
 
 len_3dots(...)
+
+atomic_content(x)
 }
 \arguments{
 \item{...}{...}
@@ -20,4 +23,6 @@ Miscellaneous functions
 \bold{\code{same_len_3dots}} - Logical test for matching lengths in an \code{ellipsis (...)}
 
 \bold{\code{len_3dots}} - Length of each entry in an \code{ellipsis (...)}
+
+\bold{\code{atomic_3dots}} - Each entry in an \code{ellipsis (...)} must be an \code{atomic} object
 }

@@ -16,3 +16,9 @@ same_len_3dots <- function(...){
 len_3dots <- function(...){
   as.numeric(lapply(list(...), length))
 }
+
+#' @rdname misc_funcs
+#' @details \bold{\code{atomic_3dots}} - Each entry in an \code{ellipsis (...)} must be an \code{atomic} object
+atomic_content <- function(x){
+  sapply(x, is.atomic, simplify = TRUE, USE.NAMES = FALSE)
+}
