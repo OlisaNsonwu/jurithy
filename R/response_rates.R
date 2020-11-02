@@ -29,7 +29,7 @@ response_rates <- function(x){
   hits <- lapply(opts, tms)
 
   names(hits) <- opts
-  hits[["response_total"]] <- length(vals)
+  hits[["response_total"]] <- rep(length(vals), length(vals[[1]]))
   hits[["response_vals"]] <- v
   hits <- hits[c(opts, "response_total", "response_vals")]
   return(hits)

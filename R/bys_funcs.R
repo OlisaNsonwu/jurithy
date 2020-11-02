@@ -44,10 +44,10 @@
 #' @rdname bys_funcs
 #' @export
 bys_rank <- function(..., by, from_last= F){
-  err <- err_bys_rank_1(..., by)
+  err <- err_bys_rank_1(..., by = by)
   if(err!=F) stop(err, call. = F)
 
-  err <- err_bys_rank_2(..., by)
+  err <- err_bys_rank_2(..., by = by)
   if(err!=F) stop(err, call. = F)
 
   max_len <- max(as.numeric(lapply(list(..., by), length)))
@@ -124,10 +124,10 @@ bys_val <- function(..., by, val, from_last= F){
 #'
 #' @export
 bys_func <- function(..., by, val, func, from_last= F){
-  if(!same_len_3dots(...)) stop("Lengths of sort vectors (...) differ!")
+  if(!same_len_3dots(...)) stop("Lengths of sort vectors (`...`) differ!")
   ell <- len_3dots(...)
-  if(ell[!duplicated(ell)] != length(by)) stop("Lengths of sort (...) and group (`by`) vectors differ!")
-  if(ell[!duplicated(ell)] != length(val)) stop("Lengths of sort (...) and value (`val`) vectors differ!")
+  if(ell[!duplicated(ell)] != length(by)) stop("Lengths of sort (`...`) and group (`by`) vectors differ!")
+  if(ell[!duplicated(ell)] != length(val)) stop("Lengths of sort (`...`) and value (`val`) vectors differ!")
   if(!is.logical(from_last)) stop("`from_last` must be `TRUE` or `FALSE`!")
   if(missing(func)) stop("Supply a function (`func`)!")
 

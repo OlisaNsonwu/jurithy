@@ -16,18 +16,18 @@ err_bys_rank_1 <- function(..., by){
 #' @rdname err_checks
 err_bys_rank_2 <- function(..., by){
   lens_1 <- as.numeric(lapply(list(..., by), length))
-  lens_1 <- list(max(lens_1), max(lens_1))
+  lens_1 <- list(min(lens_1), max(lens_1))
 
-  lens_2 <- as.numeric(lapply(list(..., by), length))
-  lens_2 <- list(max(lens_2), max(lens_))
+  # lens_2 <- as.numeric(lapply(list(..., by), length))
+  # lens_2 <- list(max(lens_2), max(lens_2))
 
-  if(lens_1[1] != lens_[2]){
-    "Each element in `...` must have the same lenght!"
-  }else if(!lens_2[1] %in% c(1, lens_2[2])){
-    "Length of `by` must be 1 or the same as `...`!"
-  }else{
-    F
+  if(lens_1[[1]] != lens_1[[2]]){
+    "Each element in `...` must have the same length!"
   }
+  if(!lens_1[[1]] %in% c(1, length(by))){
+    "Length of `by` must be 1 or the same as `...`!"
+  }
+    F
 }
 
 

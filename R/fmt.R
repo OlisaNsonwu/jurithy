@@ -32,7 +32,7 @@
 #' @export
 
 fmt <- function(x, fmt = "count", dp = 1){
-  if(!is.atomic(x) == 0) stop("`x` must be an `atomic` vector!")
+  if(!is.atomic(x)) stop("`x` must be an `atomic` vector!")
   if(length(fmt) != 1) stop("`fmt` must have a length of 1!")
   if(!fmt %in% c("count", "rate", "rate_abb",
                 "multi_var", "percent", "fy_abb", "fy_full")) stop("`fmt` must be one of ",
