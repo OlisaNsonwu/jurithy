@@ -2,9 +2,12 @@
 #'
 #' @description Convenient time codes for analysis.
 #'
-#' @param x \code{Date}, \code{POSIXct} or \code{POSIXt}.
-#' @param f Time code. Output of \code{period_cd()}.
-#' @return \code{numeric}
+#' @param x \code{Date}, \code{POSIXct} or \code{POSIXt}. \code{numeric} and \code{integer} for \code{periods()}
+#' @param origin Start of the period. Must be the same object type as \code{x}
+#' @param interval Interval between periods.
+#' @param period_nm If \code{TRUE}, returns the first point (day, time or number) of the period
+#' @param f Time code. Output of \code{period_cd()}
+#' @return \code{numeric}. \code{Date}, \code{POSIXct} or \code{POSIXt} for \code{periods()}
 #' @aliases period_cd
 #' @examples
 #' dt <- Sys.Date()
@@ -59,7 +62,10 @@ period_cd <- function(x, period = "fy"){
 
 #' @rdname period_cd
 #' @details
-#' Convert calendar month codes to financial month codes
+#' \code{cm_to_fm()} - Convert calendar month codes to financial month codes
+#' @examples
+#' cm_to_fm("201204")
+#' cm_to_fm("201201")
 #' @export
 cm_to_fm <- function(f){
   if(any(!nchar(f) %in% c(1:2, 6))) stop("Incorrect codes. See the output of `period_cd` for the required format!")
@@ -81,7 +87,10 @@ cm_to_fm <- function(f){
 
 #' @rdname period_cd
 #' @details
-#' Convert financial month codes to calendar month codes
+#' \code{fm_to_cm()} - Convert financial month codes to calendar month codes
+#' @examples
+#' fm_to_cm("201204")
+#' fm_to_cm("201201")
 #' @export
 fm_to_cm <- function(f){
   if(any(!nchar(f) %in% c(1:2, 6))) stop("Incorrect codes. See the output of `period_cd` for the required format!")
@@ -103,7 +112,10 @@ fm_to_cm <- function(f){
 
 #' @rdname period_cd
 #' @details
-#' Convert calendar month codes to financial month codes
+#' \code{cq_to_fq()} - Convert calendar quarter codes to financial quarter codes
+#' @examples
+#' cq_to_fq("20124")
+#' cq_to_fq("20121")
 #' @export
 cq_to_fq <- function(f){
   if(!all(nchar(f) == 5 & substr(f, 5,5) %in% 1:4)) stop("Incorrect codes. See the output of `period_cd` for the required format!")
@@ -114,11 +126,37 @@ cq_to_fq <- function(f){
 
 #' @rdname period_cd
 #' @details
-#' Convert financial month codes to calendar month codes
+#'  \code{cq_to_fq()} - Convert financial quarter codes to calendar quarter codes
+#' @examples
+#' fq_to_cq("20124")
+#' fq_to_cq("20121")
 #' @export
 fq_to_cq <- function(f){
   if(!all(nchar(f) == 5 & substr(f, 5,5) %in% 1:4)) stop("Incorrect codes. See the output of `period_cd` for the required format!")
   q <- as.numeric(substr(f, 5, 5))
   y <- as.numeric(substr(f, 1, 4))
   ifelse(q == 4, paste0(y + 1, 1), paste0(y, q + 1))
+}
+
+#' @rdname period_cd
+#' @details
+#' Convert dates to custom intervals
+#' @examples
+#' date <- as.Date("2019-01-05")
+#' periods(x = date, origin = date)
+#' periods(x = Sys.Date(), origin = date)
+#' periods(x = Sys.Date(), origin = date, period_nm = TRUE)
+#' @export
+periods <- function(x, origin = Sys.Date(), interval = 6, period_nm = FALSE){
+  if(any(!atomic_content(list(x, origin, interval, period_nm)))) stop(paste0(paste0("`", c("x", "origin", "interval", "period_nm"), "`", collapse = ", "), " must be actomic vectors!"))
+  if(!any(class(x) %in% c("Date", "POSIXct", "POSIXlt", "POSIXt", "numeric", "integer"))) stop(paste0("`x` must be", paste0("\"", c("Date", "POSIXct", "POSIXlt", "POSIXt", "numeric", "integer"), "\"", collapse = ", "), " objects!"))
+  if(!all(class(x) == class(origin))) stop("`x` and `origin` must have the same object types !")
+  if(!any(class(interval) %in% c("numeric", "integer"))) stop(paste0("`interval` must be", paste0("\"", c("numeric", "integer"), "\"", collapse = ", "), " objects!"))
+  if(!any(class(period_nm) %in% c("logical"))) stop(paste0("`period_nm` must be a", paste0("\"", c("logical"), "\"", collapse = ", "), " object!"))
+  y <- floor((as.numeric(x) - as.numeric(origin))/interval) + 1
+  if (period_nm == FALSE){
+    y
+  }else{
+    seq(origin, max(x), by = interval)[y]
+  }
 }

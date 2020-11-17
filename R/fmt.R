@@ -34,9 +34,9 @@
 fmt <- function(x, fmt = "count", dp = 1){
   if(!is.atomic(x)) stop("`x` must be an `atomic` vector!")
   if(length(fmt) != 1) stop("`fmt` must have a length of 1!")
-  if(!fmt %in% c("count", "rate", "rate_abb",
+  if(!fmt %in% c("count", "rate", "rate_abb", "p_val",
                 "multi_var", "percent", "fy_abb", "fy_full")) stop("`fmt` must be one of ",
-                                                                   paste0("\"", c("count", "rate", "rate_abb",
+                                                                   paste0("\"", c("count", "rate", "rate_abb", "p_val",
                                                                             "multi_var", "percent", "fy_abb", "fy_full"), "\"", collapse = ", "),
                                                                    "!")
 

@@ -6,6 +6,7 @@
 \alias{fm_to_cm}
 \alias{cq_to_fq}
 \alias{fq_to_cq}
+\alias{periods}
 \title{Numeric codes for periods}
 \usage{
 period_cd(x, period = "fy")
@@ -17,26 +18,36 @@ fm_to_cm(f)
 cq_to_fq(f)
 
 fq_to_cq(f)
+
+periods(x, origin = Sys.Date(), interval = 6, period_nm = FALSE)
 }
 \arguments{
-\item{x}{\code{Date}, \code{POSIXct} or \code{POSIXt}.}
+\item{x}{\code{Date}, \code{POSIXct} or \code{POSIXt}. \code{numeric} and \code{integer} for \code{periods()}}
 
-\item{f}{Time code. Output of \code{period_cd()}.}
+\item{f}{Time code. Output of \code{period_cd()}}
+
+\item{origin}{Start of the period. Must be the same object type as \code{x}}
+
+\item{interval}{Interval between periods.}
+
+\item{period_nm}{If \code{TRUE}, returns the first point (day, time or number) of the period}
 }
 \value{
-\code{numeric}
+\code{numeric}. \code{Date}, \code{POSIXct} or \code{POSIXt} for \code{periods()}
 }
 \description{
 Convenient time codes for analysis.
 }
 \details{
-Convert calendar month codes to financial month codes
+\code{cm_to_fm()} - Convert calendar month codes to financial month codes
 
-Convert financial month codes to calendar month codes
+\code{fm_to_cm()} - Convert financial month codes to calendar month codes
 
-Convert calendar month codes to financial month codes
+\code{cq_to_fq()} - Convert calendar quarter codes to financial quarter codes
 
-Convert financial month codes to calendar month codes
+\code{cq_to_fq()} - Convert financial quarter codes to calendar quarter codes
+
+Convert dates to custom intervals
 }
 \examples{
 dt <- Sys.Date()
@@ -48,4 +59,16 @@ period_cd(dt,"fm")
 period_cd(dt,"cm")
 period_cd(dt,"fd")
 period_cd(dt,"cq")
+cm_to_fm("201204")
+cm_to_fm("201201")
+fm_to_cm("201204")
+fm_to_cm("201201")
+cq_to_fq("20124")
+cq_to_fq("20121")
+fq_to_cq("20124")
+fq_to_cq("20121")
+date <- as.Date("2019-01-05")
+periods(x = date, origin = date)
+periods(x = Sys.Date(), origin = date)
+periods(x = Sys.Date(), origin = date, period_nm = TRUE)
 }
