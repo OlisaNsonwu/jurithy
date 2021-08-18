@@ -44,29 +44,32 @@
 #' @rdname bys_funcs
 #' @export
 bys_rank <- function(..., by, from_last= F){
-  err <- err_bys_rank_1(..., by = by)
-  if(err!=F) stop(err, call. = F)
-
-  err <- err_bys_rank_2(..., by = by)
-  if(err!=F) stop(err, call. = F)
-
-  max_len <- max(as.numeric(lapply(list(..., by), length)))
-
-  if(!same_len_3dots(...)) stop("Lengths of sort vectors (...) differ!")
-  ell <- len_3dots(...)
-  if(ell[!duplicated(ell)] != length(by)) stop("Lengths of sort (...) and group (`by`) vectors differ!")
   if(!is.logical(from_last)) stop("`from_last` must be `TRUE` or `FALSE`!")
-
+  # This is important. Don't change.
   by <- match(by, by[!duplicated(by)])
-  names(by) <- format(seq_len(length(by)) , trim = T, scientific = F)
-  by2 <- by[order(by, ..., decreasing= from_last)]
-  r <- sequence(rle(by2)$lengths)
-  names(r) <- names(by2)
-  o <- as.numeric(names(by2))
-  names(o) <- r
-  o <- sort(o)
-  r <- as.numeric(names(o))
-  return(r)
+  if(length(list(...)) == 0){
+    z_pos <- order(by, decreasing= from_last)
+  }else{
+    err <- err_bys_rank_1(..., by = by)
+    if(err!=F) stop(err, call. = F)
+
+    err <- err_bys_rank_2(..., by = by)
+    if(err!=F) stop(err, call. = F)
+
+    max_len <- max(as.numeric(lapply(list(..., by), length)))
+
+    if(!same_len_3dots(...)) stop("Lengths of sort vectors (...) differ!")
+    ell <- len_3dots(...)
+    if(ell[!duplicated(ell)] != length(by)) stop("Lengths of sort (...) and group (`by`) vectors differ!")
+    z_pos <- order(by, ..., decreasing= from_last)
+  }
+
+  a_pos <- seq_len(length(by))
+  by2 <- by[z_pos]
+  seq_ord <- sequence(rle(by2)$lengths)
+  val_r <- seq_ord[match(a_pos, z_pos)]
+  rm(list = ls()[ls() != "val_r"])
+  return(val_r)
 }
 
 #' @rdname bys_funcs
@@ -76,17 +79,16 @@ bys_rank <- function(..., by, from_last= F){
 bys_tot <- function(by){
   if(!is.atomic(by)) stop("`by` must be an `atomic` vector!")
   if(length(by) == 0) stop("`by` has a length of 0!")
-
+  # This is important. Don't change.
   by <- match(by, by[!duplicated(by)])
-  names(by) <- format(seq_len(length(by)) , trim = T, scientific = F)
-  by2 <- by[order(by)]
-  r <- rep(rle(by2)$lengths, rle(by2)$lengths)
-  names(r) <- names(by2)
-  o <- as.numeric(names(by2))
-  names(o) <- r
-  o <- sort(o)
-  r <- as.numeric(names(o))
-  return(r)
+  a_pos <- seq_len(length(by))
+  z_pos <- order(by)
+
+  by2 <- by[z_pos]
+  seq_rle <- rle(by2)
+  val_r <- seq_rle$lengths[match(by, seq_rle$values)]
+  rm(list = ls()[ls() != "val_r"])
+  return(val_r)
 }
 
 #' @rdname bys_funcs
@@ -97,26 +99,27 @@ bys_tot <- function(by){
 #' bys_val(val, by = cat, val=val, from_last = T)
 #' @export
 bys_val <- function(..., by, val, from_last= F){
-  if(!same_len_3dots(...)) stop("Lengths of sort vectors (...) differ!")
-  ell <- len_3dots(...)
-  if(ell[!duplicated(ell)] != length(by)) stop("Lengths of sort (...) and group (`by`) vectors differ!")
-  if(ell[!duplicated(ell)] != length(val)) stop("Lengths of sort (...) and value (`val`) vectors differ!")
   if(!is.logical(from_last)) stop("`from_last` must be `TRUE` or `FALSE`!")
-
+  # This is important. Don't change.
   by <- match(by, by[!duplicated(by)])
-  # rle's ordering is in reverse.
-  # reverse every direction to accomodate for this
-  from_last <- ifelse(from_last==T, F,T)
-  names(val) <- names(by) <- format(seq_len(length(by)) , trim = T, scientific = F)
-  by2 <- by[order(by, ..., decreasing= from_last, na.last=NA)]
+  if(length(list(...)) == 0){
+    z_pos <- order(by, decreasing= from_last, na.last=NA)
+  }else{
+    if(!same_len_3dots(...)) stop("Lengths of sort vectors (...) differ!")
+    ell <- len_3dots(...)
+    if(ell[!duplicated(ell)] != length(by)) stop("Lengths of sort (...) and group (`by`) vectors differ!")
+    if(ell[!duplicated(ell)] != length(val)) stop("Lengths of sort (...) and value (`val`) vectors differ!")
+    z_pos <- order(by, ..., decreasing= from_last, na.last=NA)
+  }
 
-  a <- rle(by2)
-  r_val <- val[as.numeric(names(a$values))]
+  a_pos <- seq_len(length(by))
+  by2 <- by[z_pos]
+  z_pos <- z_pos[!duplicated(by2)]
+  by2 <- by2[!duplicated(by2)]
 
-  #names(r_val) <- a$values
-  r_val <- r_val[match(by, a$values)]
-  names(r_val) <- NULL
-  return(r_val)
+  val_r <- val[z_pos[match(by, by2)]]
+  rm(list = ls()[ls() != "val_r"])
+  return(val_r)
 }
 
 #' @rdname bys_funcs
@@ -124,17 +127,22 @@ bys_val <- function(..., by, val, from_last= F){
 #'
 #' @export
 bys_func <- function(..., by, val, func, from_last= F){
-  if(!same_len_3dots(...)) stop("Lengths of sort vectors (`...`) differ!")
-  ell <- len_3dots(...)
-  if(ell[!duplicated(ell)] != length(by)) stop("Lengths of sort (`...`) and group (`by`) vectors differ!")
-  if(ell[!duplicated(ell)] != length(val)) stop("Lengths of sort (`...`) and value (`val`) vectors differ!")
   if(!is.logical(from_last)) stop("`from_last` must be `TRUE` or `FALSE`!")
   if(missing(func)) stop("Supply a function (`func`)!")
-
+  # This is important. Don't change.
   by <- match(by, by[!duplicated(by)])
-  ord <- bys_rank(..., by =by, from_last = from_last)
+  if(length(list(...)) == 0){
+    z_pos <- order(by, decreasing= from_last)
+  }else{
+    if(!same_len_3dots(...)) stop("Lengths of sort vectors (`...`) differ!")
+    ell <- len_3dots(...)
+    if(ell[!duplicated(ell)] != length(by)) stop("Lengths of sort (`...`) and group (`by`) vectors differ!")
+    if(ell[!duplicated(ell)] != length(val)) stop("Lengths of sort (`...`) and value (`val`) vectors differ!")
+    ord <- bys_rank(..., by =by, from_last = from_last)
+  }
 
-  vals <- lapply(split(val, by), func)
-  vals <- vals[match(by, names(vals))]
-  return(vals)
+  val_r <- lapply(split(val, by), func)
+  val_r <- val_r[by]
+  rm(list = ls()[ls() != "val_r"])
+  return(val_r)
 }

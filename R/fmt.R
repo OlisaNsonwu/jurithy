@@ -60,7 +60,8 @@ fmt <- function(x, fmt = "count", dp = 1){
   z <- dplyr::case_when(
     is.na(d) ~ NA_character_,
     d==0 & !fmt %in% c("p_val","multi_var") ~ "0" ,
-    janitor::round_half_up(d,dp) < 0.01 & fmt %in% c("p_val","multi_var")~ "< 0.01",
+    janitor::round_half_up(d,dp) < 0.001 & fmt %in% c("multi_var")~ "< 0.001",
+    janitor::round_half_up(d,dp) < 0.01 & fmt %in% c("p_val")~ "< 0.01",
     janitor::round_half_up(d,dp) < 0.1 & fmt %in% c("rate","rate_abb") ~ "< 0.1",
     janitor::round_half_up(d,dp) < 1 & fmt == "percent" ~ "< 1",
     TRUE ~ funx(d)
