@@ -70,44 +70,78 @@ period_cd <- function(x, period = "fy"){
 cm_to_fm <- function(f){
   if(any(!nchar(f) %in% c(1:2, 6))) stop("Incorrect codes. See the output of `period_cd` for the required format!")
 
-  y <- ifelse(nchar(f)==6, as.numeric(substr(f,5,6)), as.numeric(f))
+  y <- as.numeric(f)
+  y[nchar(f) == 6] <- as.numeric(substr(f[nchar(f) == 6], 5, 6))
 
-  fm_ord <- c(10:12,1:9)
-  cm_ord <- unlist(lapply(1:12, function(x){which(fm_ord==x)}))
-  z <- fm_ord[y]
+  ord <- c(10:12,1:9)
+  m <- y <- ord[y]
 
-  z <- ifelse(nchar(f)==6,
-              ifelse(y %in% 1:3,
-                     as.numeric(paste0(as.numeric(substr(f,1,4))-1, formatC(z, width= 2, flag=0, format = "fg"))),
-                     as.numeric(paste0(substr(f,1,4), formatC(z, width= 2, flag=0, format = "fg")))),
-              z)
+  n_pad <- function(x){
+    if(length(x) == 0){
+      x
+    }else{
+      formatC(as.numeric(x), width = 2, flag = 0, format = "fg")
+    }
+  }
+  y[nchar(f) == 6 & m %in% 10:12] <- paste0(as.numeric(substr(f[nchar(f) == 6 & m %in% 10:12], 1, 4)) - 1,
+                                            n_pad(y[nchar(f) == 6 & m %in% 10:12]))
 
-  z
+  y[nchar(f) == 6 & !m %in% 10:12] <- paste0(as.numeric(substr(f[nchar(f) == 6 & !m %in% 10:12], 1, 4)),
+                                             n_pad(y[nchar(f) == 6 & !m %in% 10:12]))
+  as.integer(y)
 }
 
 #' @rdname period_cd
 #' @details
-#' \code{fm_to_cm()} - Convert financial month codes to calendar month codes
+#'  \code{cm_to_cq()} - Convert calendar month codes to calendar quarter codes
 #' @examples
-#' fm_to_cm("201204")
-#' fm_to_cm("201201")
+#' cm_to_cq("201201")
+#' cm_to_cq("201211")
 #' @export
-fm_to_cm <- function(f){
+cm_to_cq <- function(f){
+  if(!all(nchar(f) == 6 & as.numeric(substr(f, 5,6)) %in% 1:12)) stop("Incorrect codes. See the output of `period_cd` for the required format!")
+  q <- sort(rep(1:4,3))
+  q <-paste0(substr(f, 1,4), q[as.numeric(substr(f, 5,6))])
+  as.integer(q)
+}
+
+#' @rdname period_cd
+#' @details
+#'  \code{cm_to_fq()} - Convert calendar month codes to financial quarter codes
+#' @examples
+#' cm_to_fq("201201")
+#' cm_to_fq("201211")
+#' @export
+cm_to_fq <- function(f){
+  if(!all(nchar(f) == 6 & as.numeric(substr(f, 5,6)) %in% 1:12)) stop("Incorrect codes. See the output of `period_cd` for the required format!")
+  f <- cm_to_fm(f)
+  q <- sort(rep(1:4,3))
+  q <- paste0(substr(f, 1,4), q[as.numeric(substr(f, 5,6))])
+  as.integer(q)
+}
+
+#' @rdname period_cd
+#' @details
+#' \code{cm_to_cy()} - Convert calendar month codes to calendar year codes
+#' @examples
+#' cm_to_cy("201204")
+#' cm_to_cy("201201")
+#' @export
+cm_to_cy <- function(f){
   if(any(!nchar(f) %in% c(1:2, 6))) stop("Incorrect codes. See the output of `period_cd` for the required format!")
+  as.integer(substr(f, 1, 4))
+}
 
-  y <- ifelse(nchar(f)==6, as.numeric(substr(f,5,6)), as.numeric(f))
-
-  fm_ord <- c(10:12,1:9)
-  cm_ord <- unlist(lapply(1:12, function(x){which(fm_ord==x)}))
-  z <- cm_ord[y]
-
-  z <- ifelse(nchar(f)==6,
-              ifelse(z %in% 1:3,
-                     as.numeric(paste0(as.numeric(substr(f,1,4))+1, formatC(z, width= 2, flag=0, format = "fg"))),
-                     as.numeric(paste0(substr(f,1,4), formatC(z, width= 2, flag=0, format = "fg")))),
-              z)
-
-  z
+#' @rdname period_cd
+#' @details
+#' \code{cm_to_fy()} - Convert calendar month codes to financial year codes
+#' @examples
+#' cm_to_fy("201204")
+#' cm_to_fy("201201")
+#' @export
+cm_to_fy <- function(f){
+  if(any(!nchar(f) %in% c(1:2, 6))) stop("Incorrect codes. See the output of `period_cd` for the required format!")
+  as.integer(substr(cm_to_fm(f), 1, 4))
 }
 
 #' @rdname period_cd
@@ -121,12 +155,122 @@ cq_to_fq <- function(f){
   if(!all(nchar(f) == 5 & substr(f, 5,5) %in% 1:4)) stop("Incorrect codes. See the output of `period_cd` for the required format!")
   q <- as.numeric(substr(f, 5, 5))
   y <- as.numeric(substr(f, 1, 4))
-  ifelse(q == 1, paste0(y - 1, 4), paste0(y, q - 1))
+  x <- paste0(y, q - 1)
+  x[q == 1] <- paste0(y[q == 1] - 1, 4)
+  as.integer(x)
 }
 
 #' @rdname period_cd
 #' @details
-#'  \code{cq_to_fq()} - Convert financial quarter codes to calendar quarter codes
+#' \code{cq_to_cy()} - Convert calendar quarter codes to financial year codes
+#' @examples
+#' cq_to_fy("201204")
+#' cq_to_fy("201201")
+#' @export
+cq_to_fy <- function(f){
+  if(!all(nchar(f) == 5 & substr(f, 5,5) %in% 1:4)) stop("Incorrect codes. See the output of `period_cd` for the required format!")
+  as.integer(substr(cq_to_fq(f), 1, 4))
+}
+
+#' @rdname period_cd
+#' @details
+#' \code{cq_to_cy()} - Convert calendar quarter codes to calendar year codes
+#' @examples
+#' cq_to_cy("201204")
+#' cq_to_cy("201201")
+#' @export
+cq_to_cy <- function(f){
+  if(!all(nchar(f) == 5 & substr(f, 5,5) %in% 1:4)) stop("Incorrect codes. See the output of `period_cd` for the required format!")
+  as.integer(substr(f, 1, 4))
+}
+
+#' @rdname period_cd
+#' @details
+#' \code{fm_to_cm()} - Convert financial month codes to calendar month codes
+#' @examples
+#' fm_to_cm("201204")
+#' fm_to_cm("201201")
+#' @export
+fm_to_cm <- function(f){
+  if(any(!nchar(f) %in% c(1:2, 6))) stop("Incorrect codes. See the output of `period_cd` for the required format!")
+
+  y <- as.numeric(f)
+  y[nchar(f) == 6] <- as.numeric(substr(f[nchar(f) == 6], 5, 6))
+
+  ord <- c(4:12,1:3)
+  m <- y <- ord[y]
+
+  n_pad <- function(x){
+    if(length(x) == 0){
+      x
+    }else{
+      formatC(as.numeric(x), width = 2, flag = 0, format = "fg")
+    }
+  }
+  y[nchar(f) == 6 & m %in% 1:3] <- paste0(as.numeric(substr(f[nchar(f) == 6 & m %in% 1:3], 1, 4)) + 1,
+                                          n_pad(y[nchar(f) == 6 & m %in% 1:3]))
+
+  y[nchar(f) == 6 & !m %in% 1:3] <- paste0(as.numeric(substr(f[nchar(f) == 6 & !m %in% 1:3], 1, 4)),
+                                           n_pad(y[nchar(f) == 6 & !m %in% 1:3]))
+  as.integer(y)
+}
+
+#' @rdname period_cd
+#' @details
+#'  \code{fm_to_cq()} - Convert calendar month codes to calendar quarter codes
+#' @examples
+#' fm_to_cq("201201")
+#' fm_to_cq("201211")
+#' @export
+fm_to_cq <- function(f){
+  if(!all(nchar(f) == 6 & as.numeric(substr(f, 5,6)) %in% 1:12)) stop("Incorrect codes. See the output of `period_cd` for the required format!")
+  f <- fm_to_cm(f)
+  q <- sort(rep(1:4,3))
+  q <- paste0(substr(f, 1,4), q[as.numeric(substr(f, 5,6))])
+  as.integer(q)
+}
+
+#' @rdname period_cd
+#' @details
+#'  \code{fm_to_fq()} - Convert calendar month codes to financial quarter codes
+#' @examples
+#' fm_to_fq("201201")
+#' fm_to_fq("201211")
+#' @export
+fm_to_fq <- function(f){
+  if(!all(nchar(f) == 6 & as.numeric(substr(f, 5,6)) %in% 1:12)) stop("Incorrect codes. See the output of `period_cd` for the required format!")
+  q <- sort(rep(1:4,3))
+  q <- paste0(substr(f, 1,4), q[as.numeric(substr(f, 5,6))])
+  as.integer(q)
+}
+
+#' @rdname period_cd
+#' @details
+#' \code{fm_to_cy()} - Convert financial month codes to calendar year codes
+#' @examples
+#' cm_to_cy("201204")
+#' cm_to_cy("201201")
+#' @export
+fm_to_cy <- function(f){
+  if(any(!nchar(f) %in% c(1:2, 6))) stop("Incorrect codes. See the output of `period_cd` for the required format!")
+  as.integer(substr(fm_to_cm(f), 1, 4))
+}
+
+#' @rdname period_cd
+#' @details
+#' \code{fm_to_fy()} - Convert financial month codes to financial year codes
+#' @examples
+#' fm_to_fy("201204")
+#' fm_to_fy("201201")
+#' @export
+fm_to_fy <- function(f){
+  if(any(!nchar(f) %in% c(1:2, 6))) stop("Incorrect codes. See the output of `period_cd` for the required format!")
+  as.integer(substr(f, 1, 4))
+}
+
+#' @rdname period_cd
+#' @details
+#'  \code{fq_to_cq()} - Convert financial quarter codes to calendar quarter codes
 #' @examples
 #' fq_to_cq("20124")
 #' fq_to_cq("20121")
@@ -135,8 +279,35 @@ fq_to_cq <- function(f){
   if(!all(nchar(f) == 5 & substr(f, 5,5) %in% 1:4)) stop("Incorrect codes. See the output of `period_cd` for the required format!")
   q <- as.numeric(substr(f, 5, 5))
   y <- as.numeric(substr(f, 1, 4))
-  ifelse(q == 4, paste0(y + 1, 1), paste0(y, q + 1))
+  x <- paste0(y, q + 1)
+  x[q == 4] <- paste0(y[q == 4] + 1, 1)
+  as.integer(x)
 }
+
+#' @rdname period_cd
+#' @details
+#' \code{fq_to_cy()} - Convert financial quarter codes to calendar year codes
+#' @examples
+#' fq_to_cy("201204")
+#' fq_to_cy("201201")
+#' @export
+fq_to_cy <- function(f){
+  if(!all(nchar(f) == 5 & substr(f, 5,5) %in% 1:4)) stop("Incorrect codes. See the output of `period_cd` for the required format!")
+  as.integer(substr(fq_to_cq(f), 1, 4))
+}
+
+#' @rdname period_cd
+#' @details
+#' \code{fq_to_fy()} - Convert financial quarter codes to financial year codes
+#' @examples
+#' fq_to_fy("201204")
+#' fq_to_fy("201201")
+#' @export
+fq_to_fy <- function(f){
+  if(!all(nchar(f) == 5 & substr(f, 5,5) %in% 1:4)) stop("Incorrect codes. See the output of `period_cd` for the required format!")
+  as.integer(substr(f, 1, 4))
+}
+
 
 #' @rdname period_cd
 #' @details

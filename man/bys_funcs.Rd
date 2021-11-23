@@ -6,6 +6,8 @@
 \alias{bys_tot}
 \alias{bys_val}
 \alias{bys_func}
+\alias{bys_lead_val}
+\alias{bys_nval}
 \title{\code{bysort} in \code{R}}
 \usage{
 bys_rank(..., by, from_last = F)
@@ -15,6 +17,10 @@ bys_tot(by)
 bys_val(..., by, val, from_last = F)
 
 bys_func(..., by, val, func, from_last = F)
+
+bys_lead_val(..., by, val, from_last = F, n = 1)
+
+bys_nval(..., by, val, from_last = F, n = 1)
 }
 \arguments{
 \item{...}{Sort levels. Passed to \code{order()}}

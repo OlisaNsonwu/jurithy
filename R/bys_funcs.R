@@ -112,6 +112,29 @@ bys_val <- function(..., by, val, from_last= F){
     z_pos <- order(by, ..., decreasing= from_last, na.last=NA)
   }
 
+  by2 <- by[z_pos]
+  val2 <- val[z_pos]
+  val2 <- val2[!duplicated(by2)]
+  by2 <- by2[!duplicated(by2)]
+  val_r <- val2[match(by, by2)]
+  rm(list = ls()[ls() != "val_r"])
+  return(val_r)
+}
+
+bys_val_retired <- function(..., by, val, from_last= F){
+  if(!is.logical(from_last)) stop("`from_last` must be `TRUE` or `FALSE`!")
+  # This is important. Don't change.
+  by <- match(by, by[!duplicated(by)])
+  if(length(list(...)) == 0){
+    z_pos <- order(by, decreasing= from_last, na.last=NA)
+  }else{
+    if(!same_len_3dots(...)) stop("Lengths of sort vectors (...) differ!")
+    ell <- len_3dots(...)
+    if(ell[!duplicated(ell)] != length(by)) stop("Lengths of sort (...) and group (`by`) vectors differ!")
+    if(ell[!duplicated(ell)] != length(val)) stop("Lengths of sort (...) and value (`val`) vectors differ!")
+    z_pos <- order(by, ..., decreasing= from_last, na.last=NA)
+  }
+
   a_pos <- seq_len(length(by))
   by2 <- by[z_pos]
   z_pos <- z_pos[!duplicated(by2)]
@@ -121,6 +144,8 @@ bys_val <- function(..., by, val, from_last= F){
   rm(list = ls()[ls() != "val_r"])
   return(val_r)
 }
+
+
 
 #' @rdname bys_funcs
 #' @param func Function
@@ -143,6 +168,38 @@ bys_func <- function(..., by, val, func, from_last= F){
 
   val_r <- lapply(split(val, by), func)
   val_r <- val_r[by]
+  rm(list = ls()[ls() != "val_r"])
+  return(val_r)
+}
+
+#' @rdname bys_funcs
+#' @export
+bys_lead_val <- function(..., by, val, from_last= F, n = 1){
+  ord <- bys_rank(..., by = by, from_last =  from_last)
+  by <- match(by, by[!duplicated(by)])
+  s_ord <- order(by, ord)
+
+  by2 <- by[s_ord]
+  val2 <- val[s_ord]
+  ord2 <- ord[s_ord]
+
+  new_pos <- seq_len(length(by)) + (n + 1)
+  by2 <- by[ord2]
+  val2 <- val[ord2]
+
+  val_r <- val2[match(by, by2)]
+  rm(list = ls()[ls() != "val_r"])
+  return(val_r)
+}
+
+#' @rdname bys_funcs
+#' @export
+bys_nval <- function(..., by, val, from_last= F, n = 1){
+  ord <- bys_rank(..., by = by, from_last =  from_last)
+  nt <- which(ord == (n + 1))
+  by2 <- by[nt]
+  val2 <- val[nt]
+  val_r <- val2[match(by, by2)]
   rm(list = ls()[ls() != "val_r"])
   return(val_r)
 }
