@@ -96,7 +96,7 @@ bys_tot <- function(by){
 #'
 #' @examples
 #' bys_val(val, by = cat, val=val)
-#' bys_val(val, by = cat, val=val, from_last = T)
+#' bys_val(val, by = cat, val=val, from_last = TRUE)
 #' @export
 bys_val <- function(..., by, val, from_last= F){
   if(!is.logical(from_last)) stop("`from_last` must be `TRUE` or `FALSE`!")

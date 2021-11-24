@@ -164,8 +164,8 @@ cq_to_fq <- function(f){
 #' @details
 #' \code{cq_to_cy()} - Convert calendar quarter codes to financial year codes
 #' @examples
-#' cq_to_fy("201204")
-#' cq_to_fy("201201")
+#' cq_to_fy("20124")
+#' cq_to_fy("20121")
 #' @export
 cq_to_fy <- function(f){
   if(!all(nchar(f) == 5 & substr(f, 5,5) %in% 1:4)) stop("Incorrect codes. See the output of `period_cd` for the required format!")
@@ -176,8 +176,8 @@ cq_to_fy <- function(f){
 #' @details
 #' \code{cq_to_cy()} - Convert calendar quarter codes to calendar year codes
 #' @examples
-#' cq_to_cy("201204")
-#' cq_to_cy("201201")
+#' cq_to_cy("20124")
+#' cq_to_cy("20121")
 #' @export
 cq_to_cy <- function(f){
   if(!all(nchar(f) == 5 & substr(f, 5,5) %in% 1:4)) stop("Incorrect codes. See the output of `period_cd` for the required format!")
@@ -288,8 +288,8 @@ fq_to_cq <- function(f){
 #' @details
 #' \code{fq_to_cy()} - Convert financial quarter codes to calendar year codes
 #' @examples
-#' fq_to_cy("201204")
-#' fq_to_cy("201201")
+#' fq_to_cy("20124")
+#' fq_to_cy("20121")
 #' @export
 fq_to_cy <- function(f){
   if(!all(nchar(f) == 5 & substr(f, 5,5) %in% 1:4)) stop("Incorrect codes. See the output of `period_cd` for the required format!")
@@ -300,8 +300,8 @@ fq_to_cy <- function(f){
 #' @details
 #' \code{fq_to_fy()} - Convert financial quarter codes to financial year codes
 #' @examples
-#' fq_to_fy("201204")
-#' fq_to_fy("201201")
+#' fq_to_fy("20124")
+#' fq_to_fy("20121")
 #' @export
 fq_to_fy <- function(f){
   if(!all(nchar(f) == 5 & substr(f, 5,5) %in% 1:4)) stop("Incorrect codes. See the output of `period_cd` for the required format!")

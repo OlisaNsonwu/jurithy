@@ -73,5 +73,5 @@ bys_rank(cat, by = cat)
 bys_rank(val, by = cat)
 bys_tot(by = cat)
 bys_val(val, by = cat, val=val)
-bys_val(val, by = cat, val=val, from_last = T)
+bys_val(val, by = cat, val=val, from_last = TRUE)
 }
