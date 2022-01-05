@@ -32,6 +32,8 @@ bys_nval(..., by, val, from_last = F, n = 1)
 \item{val}{Value}
 
 \item{func}{Function}
+
+\item{n}{Target position}
 }
 \value{
 Atomic vector

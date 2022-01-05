@@ -3,6 +3,7 @@
 #' @description Convenient time codes for analysis.
 #'
 #' @param x \code{Date}, \code{POSIXct} or \code{POSIXt}. \code{numeric} and \code{integer} for \code{periods()}
+#' @param period Options are \code{"fy"} (default), \code{"fy"}, \code{"cy"}, \code{"fq"}, \code{"cq"}, \code{"fm"}, \code{"cm"}
 #' @param origin Start of the period. Must be the same object type as \code{x}
 #' @param interval Interval between periods.
 #' @param period_nm If \code{TRUE}, returns the first point (day, time or number) of the period

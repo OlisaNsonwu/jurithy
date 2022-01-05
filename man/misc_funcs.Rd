@@ -15,6 +15,8 @@ atomic_content(x)
 }
 \arguments{
 \item{...}{...}
+
+\item{x}{x}
 }
 \description{
 Miscellaneous functions

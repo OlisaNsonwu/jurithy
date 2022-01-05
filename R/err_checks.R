@@ -4,6 +4,7 @@
 #' @description Check for errors
 #' @rdname err_checks
 #' @param ... ...
+#' @param by by
 err_bys_rank_1 <- function(..., by){
   typs <- as.numeric(lapply(list(..., by), is.atomic))
   if(min(typs) != 1){

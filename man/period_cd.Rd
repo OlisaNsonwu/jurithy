@@ -60,6 +60,8 @@ periods(x, origin = Sys.Date(), interval = 6, period_nm = FALSE)
 \arguments{
 \item{x}{\code{Date}, \code{POSIXct} or \code{POSIXt}. \code{numeric} and \code{integer} for \code{periods()}}
 
+\item{period}{Options are \code{"fy"} (default), \code{"fy"}, \code{"cy"}, \code{"fq"}, \code{"cq"}, \code{"fm"}, \code{"cm"}}
+
 \item{f}{Time code. Output of \code{period_cd()}}
 
 \item{origin}{Start of the period. Must be the same object type as \code{x}}

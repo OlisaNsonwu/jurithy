@@ -18,6 +18,7 @@ len_3dots <- function(...){
 }
 
 #' @rdname misc_funcs
+#' @param x x
 #' @details \bold{\code{atomic_3dots}} - Each entry in an \code{ellipsis (...)} must be an \code{atomic} object
 atomic_content <- function(x){
   sapply(x, is.atomic, simplify = TRUE, USE.NAMES = FALSE)

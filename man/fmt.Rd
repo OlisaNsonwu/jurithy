@@ -10,6 +10,8 @@ fmt(x, fmt = "count", dp = 1)
 \item{x}{Numerical vector to be formatted.}
 
 \item{fmt}{Character vector specifying the type of format to be applied.}
+
+\item{dp}{Decimal place}
 }
 \value{
 A Character vector

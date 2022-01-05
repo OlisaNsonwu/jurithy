@@ -6,6 +6,7 @@
 #' @param ... Sort levels. Passed to \code{order()}
 #' @param by Groups
 #' @param from_last Sort order. Passed to \code{order()}
+#'
 #' @return Atomic vector
 #' @details
 #' \bold{\code{bys_rank}} - Sort order of each record in a group
@@ -145,8 +146,6 @@ bys_val_retired <- function(..., by, val, from_last= F){
   return(val_r)
 }
 
-
-
 #' @rdname bys_funcs
 #' @param func Function
 #'
@@ -173,6 +172,7 @@ bys_func <- function(..., by, val, func, from_last= F){
 }
 
 #' @rdname bys_funcs
+#' @param n Target position
 #' @export
 bys_lead_val <- function(..., by, val, from_last= F, n = 1){
   ord <- bys_rank(..., by = by, from_last =  from_last)

@@ -4,6 +4,7 @@
 #'
 #'
 #' @param x Numerical vector to be formatted.
+#' @param dp Decimal place
 #' @param fmt Character vector specifying the type of format to be applied.
 #'
 #' @seealso \code{\link{fy}}
@@ -52,9 +53,9 @@ fmt <- function(x, fmt = "count", dp = 1){
       paste("= ",formatC(janitor::round_half_up(g,dp), digits = dp, format = "f"), sep="")
     }
   }else if(fmt == "fy_abb"){
-    funx <- fy(g, fmt = "abb")
+    funx <- fy(x, fmt = "abb")
   }else if(fmt == "fy_full"){
-    funx <- fy(g, fmt = "full")
+    funx <- fy(x, fmt = "full")
   }
 
   z <- dplyr::case_when(

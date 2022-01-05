@@ -12,6 +12,8 @@ err_bys_rank_2(..., by)
 }
 \arguments{
 \item{...}{...}
+
+\item{by}{by}
 }
 \description{
 Check for errors
