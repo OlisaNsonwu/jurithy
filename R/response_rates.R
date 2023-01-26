@@ -20,7 +20,16 @@ response_rates <- function(x){
   if(!any(class(x) %in% c("list", "data.frame") )) stop("`x` must be a `list` object!")
   if(any(!atomic_content(x))) stop("Every element in `...` must be an atomic vector!")
   vals <- as.list(x)
-
+  err <- lapply(vals, function(x){
+    any(nchar(x) != 1)
+  })
+  err <- unlist(err, use.names = FALSE)
+  if(any(err)){
+    err <- which(err)
+    stop(paste0("Each value in every element/column must be have a character length of 1!\n",
+                "i - This is not the case in the elements/columns below\n",
+                paste0("X - ", names(x)[err], collapse = "\n")))
+  }
   s <- paste0("vals[[", seq_len(length(vals)) ,"]]", collapse = ", ")
   v <- eval(parse(text = paste0("paste(",s,",sep='-')")))
   opts <- eval(parse(text = paste0("c(",s,")")))
