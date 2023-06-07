@@ -203,3 +203,23 @@ bys_nval <- function(..., by, val, from_last= F, n = 1){
   rm(list = ls()[ls() != "val_r"])
   return(val_r)
 }
+
+#' @rdname bys_funcs
+#' @export
+bys_sum <- function(by, val){
+  x <- make_refs_V2(
+    x_val = by,
+    y_val = seq_len(length(val)),
+    useAsPos = FALSE,
+    na = 0L
+  )
+  y <- x[,"x"]
+
+  y.vars <- colnames(x)[grepl("y", colnames(x))]
+  y.pos <- x[, y.vars]
+  y.val <- matrix(val[y.pos], nrow = nrow(x))
+  y.sum <- rowSums(y.val)
+  val[t(y.pos)] <- rep(y.sum, ncol(y.pos))
+  rm(list = ls()[ls() != "val"])
+  return(val)
+}

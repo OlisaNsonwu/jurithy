@@ -2,24 +2,26 @@
 % Please edit documentation in R/round_to.R
 \name{round_to}
 \alias{round_to}
-\title{Round to multiples of a number.}
+\title{Round to}
 \usage{
-round_to(x, to = 50)
+round_to(x, to, f = round)
 }
 \arguments{
-\item{x}{Numeric. Figure to round down.}
+\item{val}{Ordered vector}
 
-\item{to}{Numeric. Multiple.}
+\item{by}{Increment}
+
+\item{func}{Function}
 }
 \value{
-Numeric
+Vector of he same class as \code{val}
 }
 \description{
-Round to multiples of a number.
+Round to
 }
 \examples{
 
-round_to(135, 10)
-round_to(135, 2)
-
+round_to(1104.3, 5)
+round_to(1104.3, 5, ceiling)
+round_to(1104.3, 5, trunc)
 }

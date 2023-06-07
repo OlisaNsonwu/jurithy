@@ -26,39 +26,21 @@ period_cd <- function(x, period = "fy"){
   if(!any(class(x) %in% c("Date","POSIXct","POSIXt"))) stop("'x' must be a 'Date', 'POSIXct' or 'POSIXt'!")
   if(length(period) != 1) stop("`period` must have a length of 1!")
   if(!period %in% c("fy","cy","fq","cq","fm","cm","fd","cd")) stop("'period' must be 'fy', 'cy', 'fq', 'cq', 'fm', 'cm', 'fd' or 'cd'")
-  m_l <- as.numeric(format(x, "%m"))
-  m <- as.numeric(m_l)
-  y <- as.numeric(format(x, "%Y"))
-  d_l <- format(x, "%d")
-  d <- as.numeric(d_l)
-  if(period=="fy"){
-    x <- ifelse(m %in% 1:3,
-                paste0(y - 1, substr(y, 3, 4)),
-                paste0(y, substr(y + 1, 3, 4)))
-  }else if(period=="cy"){
-    x <- y
-  }else if(period=="fq"){
-    qts <- c(rep(4, 3), rep(1, 3), rep(2, 3), rep(3, 3))
-    x <- ifelse(m %in% 1:3,
-                paste0(y-1, qts[m]),
-                paste0(y, qts[m]))
-  }else if(period=="cq"){
-    qts <- c(rep(1,3), rep(2,3), rep(3,3), rep(4,3))
-    x <- paste0(y, qts[m])
-  }else if(period=="fm"){
-    mns <- formatC(c(10:12, 1:9), width = 2, format = "d", flag = "0")
-    x <- paste0(ifelse(m %in% 1:3, y - 1, y), mns[m])
-  }
-  else if(period=="cm"){
-    x <- format(x, "%Y%m")
-  }else if(period=="cd"){
-    x <- format(x, "%Y%m%d")
-  }else if(period=="fd"){
-    mns <- formatC(c(10:12, 1:9), width = 2, format = "d", flag = "0")
-    x <- paste0(ifelse(m %in% 1:3, y - 1, y), mns[m], d_l)
-  }
 
-  as.numeric(x)
+  m <- as.numeric(format(x, "%m"))
+  y <- as.numeric(format(x, "%Y"))
+  d <-  as.numeric(format(x, "%d"))
+  x <- (y * 100) + m
+
+  if(period %in% c("fy", "cy", "fq", "cq", "fm")){
+    func <- get(paste0("cm_to_", period))
+    x <- func(x)
+  }else if (period == "cd"){
+    x <- (x * 100) + d
+  }else if (period == "fd"){
+    x <- (cm_to_fm(x) * 100) + d
+  }
+  x
 }
 
 #' @rdname period_cd
@@ -70,26 +52,14 @@ period_cd <- function(x, period = "fy"){
 #' @export
 cm_to_fm <- function(f){
   if(any(!nchar(f) %in% c(1:2, 6))) stop("Incorrect codes. See the output of `period_cd` for the required format!")
-
-  y <- as.numeric(f)
-  y[nchar(f) == 6] <- as.numeric(substr(f[nchar(f) == 6], 5, 6))
-
-  ord <- c(10:12,1:9)
-  m <- y <- ord[y]
-
-  n_pad <- function(x){
-    if(length(x) == 0){
-      x
-    }else{
-      formatC(as.numeric(x), width = 2, flag = 0, format = "fg")
-    }
-  }
-  y[nchar(f) == 6 & m %in% 10:12] <- paste0(as.numeric(substr(f[nchar(f) == 6 & m %in% 10:12], 1, 4)) - 1,
-                                            n_pad(y[nchar(f) == 6 & m %in% 10:12]))
-
-  y[nchar(f) == 6 & !m %in% 10:12] <- paste0(as.numeric(substr(f[nchar(f) == 6 & !m %in% 10:12], 1, 4)),
-                                             n_pad(y[nchar(f) == 6 & !m %in% 10:12]))
-  as.integer(y)
+  f <- as.numeric(f)
+  y <- as.integer(f/100)
+  m <- f - (y * 100)
+  m2 <- c(10:12,1:9)[m]
+  x <- (y * 100) + m2
+  lgk <- m >= 10
+  x[lgk] <- ((y[lgk] - 1) * 100) + m2[lgk]
+  x
 }
 
 #' @rdname period_cd
@@ -100,10 +70,13 @@ cm_to_fm <- function(f){
 #' cm_to_cq("201211")
 #' @export
 cm_to_cq <- function(f){
-  if(!all(nchar(f) == 6 & as.numeric(substr(f, 5,6)) %in% 1:12)) stop("Incorrect codes. See the output of `period_cd` for the required format!")
-  q <- sort(rep(1:4,3))
-  q <-paste0(substr(f, 1,4), q[as.numeric(substr(f, 5,6))])
-  as.integer(q)
+  y <- as.integer(f/100)
+  m <- f - (y * 100)
+  if(!all(nchar(f) == 6 & as.numeric(m) %in% 1:12)) stop("Incorrect codes. See the output of `period_cd` for the required format!")
+  f <- as.integer(f)
+  q <- rep(1:4, rep(3, 4))
+  q <- (y * 10) + q[m]
+  q
 }
 
 #' @rdname period_cd
@@ -114,11 +87,10 @@ cm_to_cq <- function(f){
 #' cm_to_fq("201211")
 #' @export
 cm_to_fq <- function(f){
-  if(!all(nchar(f) == 6 & as.numeric(substr(f, 5,6)) %in% 1:12)) stop("Incorrect codes. See the output of `period_cd` for the required format!")
-  f <- cm_to_fm(f)
-  q <- sort(rep(1:4,3))
-  q <- paste0(substr(f, 1,4), q[as.numeric(substr(f, 5,6))])
-  as.integer(q)
+  y <- as.integer(f/100)
+  m <- f - (y * 100)
+  if(!all(nchar(f) == 6 & as.numeric(m) %in% 1:12)) stop("Incorrect codes. See the output of `period_cd` for the required format!")
+  cm_to_cq(cm_to_fm(f))
 }
 
 #' @rdname period_cd
@@ -130,7 +102,7 @@ cm_to_fq <- function(f){
 #' @export
 cm_to_cy <- function(f){
   if(any(!nchar(f) %in% c(1:2, 6))) stop("Incorrect codes. See the output of `period_cd` for the required format!")
-  as.integer(substr(f, 1, 4))
+  as.integer(f/100)
 }
 
 #' @rdname period_cd
@@ -142,7 +114,7 @@ cm_to_cy <- function(f){
 #' @export
 cm_to_fy <- function(f){
   if(any(!nchar(f) %in% c(1:2, 6))) stop("Incorrect codes. See the output of `period_cd` for the required format!")
-  as.integer(substr(cm_to_fm(f), 1, 4))
+  as.integer(cm_to_fm(f)/100)
 }
 
 #' @rdname period_cd
@@ -153,12 +125,14 @@ cm_to_fy <- function(f){
 #' cq_to_fq("20121")
 #' @export
 cq_to_fq <- function(f){
-  if(!all(nchar(f) == 5 & substr(f, 5,5) %in% 1:4)) stop("Incorrect codes. See the output of `period_cd` for the required format!")
-  q <- as.numeric(substr(f, 5, 5))
-  y <- as.numeric(substr(f, 1, 4))
-  x <- paste0(y, q - 1)
-  x[q == 1] <- paste0(y[q == 1] - 1, 4)
-  as.integer(x)
+  f <- as.integer(f)
+  y <- as.integer(f/10)
+  q <- f - (y * 10)
+  if(!all(nchar(f) == 5 & q %in% 1:4)) stop("Incorrect codes. See the output of `period_cd` for the required format!")
+  x <- (y * 10) + (q - 1)
+  lgk <- q == 1
+  x[lgk] <- ((y[lgk] - 1) * 10) + 4
+  x
 }
 
 #' @rdname period_cd
@@ -169,8 +143,11 @@ cq_to_fq <- function(f){
 #' cq_to_fy("20121")
 #' @export
 cq_to_fy <- function(f){
-  if(!all(nchar(f) == 5 & substr(f, 5,5) %in% 1:4)) stop("Incorrect codes. See the output of `period_cd` for the required format!")
-  as.integer(substr(cq_to_fq(f), 1, 4))
+  f <- as.integer(f)
+  y <- as.integer(f/10)
+  q <- f - (y * 10)
+  if(!all(nchar(f) == 5 & q %in% 1:4)) stop("Incorrect codes. See the output of `period_cd` for the required format!")
+  as.integer(cq_to_fq(f)/10)
 }
 
 #' @rdname period_cd
@@ -181,8 +158,11 @@ cq_to_fy <- function(f){
 #' cq_to_cy("20121")
 #' @export
 cq_to_cy <- function(f){
-  if(!all(nchar(f) == 5 & substr(f, 5,5) %in% 1:4)) stop("Incorrect codes. See the output of `period_cd` for the required format!")
-  as.integer(substr(f, 1, 4))
+  f <- as.integer(f)
+  y <- as.integer(f/10)
+  q <- f - (y * 10)
+  if(!all(nchar(f) == 5 & q %in% 1:4)) stop("Incorrect codes. See the output of `period_cd` for the required format!")
+  as.integer(f/10)
 }
 
 #' @rdname period_cd
@@ -194,26 +174,14 @@ cq_to_cy <- function(f){
 #' @export
 fm_to_cm <- function(f){
   if(any(!nchar(f) %in% c(1:2, 6))) stop("Incorrect codes. See the output of `period_cd` for the required format!")
-
-  y <- as.numeric(f)
-  y[nchar(f) == 6] <- as.numeric(substr(f[nchar(f) == 6], 5, 6))
-
-  ord <- c(4:12,1:3)
-  m <- y <- ord[y]
-
-  n_pad <- function(x){
-    if(length(x) == 0){
-      x
-    }else{
-      formatC(as.numeric(x), width = 2, flag = 0, format = "fg")
-    }
-  }
-  y[nchar(f) == 6 & m %in% 1:3] <- paste0(as.numeric(substr(f[nchar(f) == 6 & m %in% 1:3], 1, 4)) + 1,
-                                          n_pad(y[nchar(f) == 6 & m %in% 1:3]))
-
-  y[nchar(f) == 6 & !m %in% 1:3] <- paste0(as.numeric(substr(f[nchar(f) == 6 & !m %in% 1:3], 1, 4)),
-                                           n_pad(y[nchar(f) == 6 & !m %in% 1:3]))
-  as.integer(y)
+  f <- as.numeric(f)
+  y <- as.integer(f/100)
+  m <- f - (y * 100)
+  m2 <- c(4:12,1:3)[m]
+  x <- (y * 100) + m2
+  lgk <- m >= 10
+  x[lgk] <- ((y[lgk] + 1) * 100) + m2[lgk]
+  x
 }
 
 #' @rdname period_cd
@@ -224,11 +192,7 @@ fm_to_cm <- function(f){
 #' fm_to_cq("201211")
 #' @export
 fm_to_cq <- function(f){
-  if(!all(nchar(f) == 6 & as.numeric(substr(f, 5,6)) %in% 1:12)) stop("Incorrect codes. See the output of `period_cd` for the required format!")
-  f <- fm_to_cm(f)
-  q <- sort(rep(1:4,3))
-  q <- paste0(substr(f, 1,4), q[as.numeric(substr(f, 5,6))])
-  as.integer(q)
+  cm_to_cq(fm_to_cm(f))
 }
 
 #' @rdname period_cd
@@ -238,12 +202,7 @@ fm_to_cq <- function(f){
 #' fm_to_fq("201201")
 #' fm_to_fq("201211")
 #' @export
-fm_to_fq <- function(f){
-  if(!all(nchar(f) == 6 & as.numeric(substr(f, 5,6)) %in% 1:12)) stop("Incorrect codes. See the output of `period_cd` for the required format!")
-  q <- sort(rep(1:4,3))
-  q <- paste0(substr(f, 1,4), q[as.numeric(substr(f, 5,6))])
-  as.integer(q)
-}
+fm_to_fq <- cm_to_cq
 
 #' @rdname period_cd
 #' @details
@@ -253,8 +212,7 @@ fm_to_fq <- function(f){
 #' cm_to_cy("201201")
 #' @export
 fm_to_cy <- function(f){
-  if(any(!nchar(f) %in% c(1:2, 6))) stop("Incorrect codes. See the output of `period_cd` for the required format!")
-  as.integer(substr(fm_to_cm(f), 1, 4))
+  fm_to_cm(cm_to_cy(f))
 }
 
 #' @rdname period_cd
@@ -264,10 +222,7 @@ fm_to_cy <- function(f){
 #' fm_to_fy("201204")
 #' fm_to_fy("201201")
 #' @export
-fm_to_fy <- function(f){
-  if(any(!nchar(f) %in% c(1:2, 6))) stop("Incorrect codes. See the output of `period_cd` for the required format!")
-  as.integer(substr(f, 1, 4))
-}
+fm_to_fy <- cm_to_fy
 
 #' @rdname period_cd
 #' @details
@@ -277,12 +232,14 @@ fm_to_fy <- function(f){
 #' fq_to_cq("20121")
 #' @export
 fq_to_cq <- function(f){
-  if(!all(nchar(f) == 5 & substr(f, 5,5) %in% 1:4)) stop("Incorrect codes. See the output of `period_cd` for the required format!")
-  q <- as.numeric(substr(f, 5, 5))
-  y <- as.numeric(substr(f, 1, 4))
-  x <- paste0(y, q + 1)
-  x[q == 4] <- paste0(y[q == 4] + 1, 1)
-  as.integer(x)
+  f <- as.integer(f)
+  y <- as.integer(f/10)
+  q <- f - (y * 10)
+  if(!all(nchar(f) == 5 & q %in% 1:4)) stop("Incorrect codes. See the output of `period_cd` for the required format!")
+  x <- (y * 10) + (q - 1)
+  lgk <- q == 4
+  x[lgk] <- ((y[lgk] + 1) * 10) + 1
+  x
 }
 
 #' @rdname period_cd
@@ -293,8 +250,7 @@ fq_to_cq <- function(f){
 #' fq_to_cy("20121")
 #' @export
 fq_to_cy <- function(f){
-  if(!all(nchar(f) == 5 & substr(f, 5,5) %in% 1:4)) stop("Incorrect codes. See the output of `period_cd` for the required format!")
-  as.integer(substr(fq_to_cq(f), 1, 4))
+  cq_to_cy(fq_to_cq(f))
 }
 
 #' @rdname period_cd
@@ -304,10 +260,7 @@ fq_to_cy <- function(f){
 #' fq_to_fy("20124")
 #' fq_to_fy("20121")
 #' @export
-fq_to_fy <- function(f){
-  if(!all(nchar(f) == 5 & substr(f, 5,5) %in% 1:4)) stop("Incorrect codes. See the output of `period_cd` for the required format!")
-  as.integer(substr(f, 1, 4))
-}
+fq_to_fy <- cq_to_cy
 
 
 #' @rdname period_cd
