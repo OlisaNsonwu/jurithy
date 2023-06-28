@@ -207,19 +207,24 @@ bys_nval <- function(..., by, val, from_last= F, n = 1){
 #' @rdname bys_funcs
 #' @export
 bys_sum <- function(by, val){
-  x <- make_refs_V2(
-    x_val = by,
-    y_val = seq_len(length(val)),
-    useAsPos = FALSE,
-    na = 0L
-  )
-  y <- x[,"x"]
+  by <- match(by, by[!duplicated(by)])
+  s_ord <- order(by)
+  by <- by[s_ord]
+  val <- val[s_ord]
 
-  y.vars <- colnames(x)[grepl("y", colnames(x))]
-  y.pos <- x[, y.vars]
-  y.val <- matrix(val[y.pos], nrow = nrow(x))
-  y.sum <- rowSums(y.val)
-  val[t(y.pos)] <- rep(y.sum, ncol(y.pos))
-  rm(list = ls()[ls() != "val"])
+  rp <- rle(by)
+  val <- cumsum(val)
+  lgk <- !duplicated(by, fromLast = TRUE)
+  val <- val[lgk]
+  by <- by[lgk]
+
+  if(length(val) == 1){
+    val <- rep(val, rp$lengths)
+    return(val)
+  }
+  lag_pos <- 1:(length(val)-1)
+  val <- val - c(0, val[lag_pos])
+  val <- rep(val, rp$lengths)
+  val <- val[order(s_ord)]
   return(val)
 }

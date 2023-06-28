@@ -57,7 +57,7 @@ cm_to_fm <- function(f){
   m <- f - (y * 100)
   m2 <- c(10:12,1:9)[m]
   x <- (y * 100) + m2
-  lgk <- m >= 10
+  lgk <- m2 >= 10
   x[lgk] <- ((y[lgk] - 1) * 100) + m2[lgk]
   x
 }
@@ -129,7 +129,7 @@ cq_to_fq <- function(f){
   y <- as.integer(f/10)
   q <- f - (y * 10)
   if(!all(nchar(f) == 5 & q %in% 1:4)) stop("Incorrect codes. See the output of `period_cd` for the required format!")
-  x <- (y * 10) + (q - 1)
+  x <- (y * 10) + (c(4,1,2,3)[q])
   lgk <- q == 1
   x[lgk] <- ((y[lgk] - 1) * 10) + 4
   x
@@ -180,6 +180,7 @@ fm_to_cm <- function(f){
   m2 <- c(4:12,1:3)[m]
   x <- (y * 100) + m2
   lgk <- m >= 10
+
   x[lgk] <- ((y[lgk] + 1) * 100) + m2[lgk]
   x
 }
@@ -236,7 +237,7 @@ fq_to_cq <- function(f){
   y <- as.integer(f/10)
   q <- f - (y * 10)
   if(!all(nchar(f) == 5 & q %in% 1:4)) stop("Incorrect codes. See the output of `period_cd` for the required format!")
-  x <- (y * 10) + (q - 1)
+  x <- (y * 10) + (c(2,3,4,1)[q])
   lgk <- q == 4
   x[lgk] <- ((y[lgk] + 1) * 10) + 1
   x
