@@ -2,41 +2,58 @@
 % Please edit documentation in R/bys_funcs.R
 \name{bys_funcs}
 \alias{bys_funcs}
+\alias{bys_count}
 \alias{bys_rank}
+\alias{bys_position}
 \alias{bys_tot}
 \alias{bys_val}
-\alias{bys_func}
-\alias{bys_lead_val}
 \alias{bys_nval}
+\alias{bys_min}
+\alias{bys_max}
 \alias{bys_sum}
+\alias{bys_prod}
+\alias{bys_cummin}
+\alias{bys_cummax}
+\alias{bys_cumsum}
+\alias{bys_cumprod}
 \title{\code{bysort} in \code{R}}
 \usage{
-bys_rank(..., by, from_last = F)
+bys_count(by)
+
+bys_rank(..., by, from_last = FALSE)
+
+bys_position(val, by, from_last = FALSE)
 
 bys_tot(by)
 
-bys_val(..., by, val, from_last = F)
+bys_val(..., by, val, from_last = FALSE)
 
-bys_func(..., by, val, func, from_last = F)
+bys_nval(..., by, val, from_last = FALSE, n = 1, et = TRUE)
 
-bys_lead_val(..., by, val, from_last = F, n = 1)
+bys_min(by, val, na.rm = TRUE)
 
-bys_nval(..., by, val, from_last = F, n = 1)
+bys_max(by, val, na.rm = TRUE)
 
-bys_sum(by, val)
+bys_sum(by, val, na.rm = TRUE)
+
+bys_prod(by, val, na.rm = TRUE)
+
+bys_cummin(by, val, na.rm = TRUE)
+
+bys_cummax(by, val, na.rm = FALSE)
+
+bys_cumsum(by, val, na.rm = TRUE)
+
+bys_cumprod(by, val, na.rm = TRUE)
 }
 \arguments{
-\item{...}{Sort levels. Passed to \code{order()}}
-
 \item{by}{Groups}
+
+\item{...}{Sort levels. Passed to \code{order()}}
 
 \item{from_last}{Sort order. Passed to \code{order()}}
 
 \item{val}{Value}
-
-\item{func}{Function}
-
-\item{n}{Target position}
 }
 \value{
 Atomic vector
@@ -71,12 +88,23 @@ Use \code{from_last} to rank from in ascending (\code{FALSE}) or descending orde
 \bold{\code{bys_func}} - Apply a function to group of records.
 }
 \examples{
-cat <- c(1,1,5,3,1)
-val <- c("K","Z","A","F","K")
-
-bys_rank(cat, by = cat)
-bys_rank(val, by = cat)
-bys_tot(by = cat)
+x <- data.frame(
+  group = c(2, 2, 1, 2, 1, 1, 1, 2, 1, 1),
+  value = c(13, 14, 20, 9, 2, 1, 8, 18, 3, 17))
+bys_count(x$group)
+bys_position(x$value, by = x$group, from_last = TRUE)
+bys_rank(by = x$group, val = x$value, from_last = TRUE)
+bys_val(x$value, by = x$group, val = x$value, from_last = TRUE)
+bys_nval(x$value, by = x$group, val = x$value, from_last = TRUE, n = 2)
+bys_min(by = x$group, val = x$value)
+bys_max(by = x$group, val = x$value)
+bys_sum(by = x$group, val = x$value)
+bys_prod(by = x$group, val = x$value)
+bys_cummin(by = x$group, val = x$value)
+bys_cummax(by = x$group, val = x$value)
+bys_cumsum(by = x$group, val = x$value)
+bys_cumprod(by = x$group, val = x$value)
+bys_count(by = cat)
 bys_val(val, by = cat, val=val)
 bys_val(val, by = cat, val=val, from_last = TRUE)
 }
