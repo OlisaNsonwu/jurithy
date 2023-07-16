@@ -72,9 +72,14 @@ bys_count <- function(by){
 
 #' @rdname bys_funcs
 #' @export
-bys_rank <- function(..., by, from_last = FALSE){
+bys_rank <- function(..., by = NULL, from_last = FALSE){
   if(!is.logical(from_last)) stop("`from_last` must be `TRUE` or `FALSE`!")
-  by <- match(by, by[!duplicated(by)])
+  null.by <- is.null(by)
+  if(null.by){
+    by <- rep(1L, max(sapply(list(...), length)))
+  }else{
+    by <- match(by, by[!duplicated(by)])
+  }
   if(length(list(...)) == 0){
     s_ord <- order(by, decreasing = from_last, na.last = TRUE)
   }else{
@@ -89,9 +94,14 @@ bys_rank <- function(..., by, from_last = FALSE){
 
 #' @rdname bys_funcs
 #' @export
-bys_position <- function(val, by, from_last = FALSE){
+bys_position <- function(val, by = NULL, from_last = FALSE){
   if(!is.logical(from_last)) stop("`from_last` must be `TRUE` or `FALSE`!")
-  by <- match(by, by[!duplicated(by)])
+  null.by <- is.null(by)
+  if(null.by){
+    by <- rep(1L, length(val))
+  }else{
+    by <- match(by, by[!duplicated(by)])
+  }
   s_ord <- order(by, val, decreasing = from_last, na.last = TRUE)
 
   by <- by[s_ord]
@@ -118,9 +128,14 @@ bys_tot <- bys_count
 #' bys_val(val, by = cat, val=val)
 #' bys_val(val, by = cat, val=val, from_last = TRUE)
 #' @export
-bys_val <- function(..., by, val, from_last = FALSE){
+bys_val <- function(..., val, by = NULL, from_last = FALSE){
   if(!is.logical(from_last)) stop("`from_last` must be `TRUE` or `FALSE`!")
-  by <- match(by, by[!duplicated(by)])
+  null.by <- is.null(by)
+  if(null.by){
+    by <- rep(1L, length(val))
+  }else{
+    by <- match(by, by[!duplicated(by)])
+  }
   if(length(list(...)) == 0){
     s_ord <- order(by, decreasing = from_last, na.last = TRUE)
   }else{
@@ -136,7 +151,7 @@ bys_val <- function(..., by, val, from_last = FALSE){
 
 #' @rdname bys_funcs
 #' @export
-bys_nval <- function(..., by, val, from_last = FALSE, n = 1, et = TRUE){
+bys_nval <- function(..., val, by = NULL, from_last = FALSE, n = 1, et = TRUE){
   ord <- bys_position(..., by = by, from_last = from_last)
   s_ord <- !(ord >= n)
 
@@ -153,7 +168,7 @@ bys_nval <- function(..., by, val, from_last = FALSE, n = 1, et = TRUE){
 
 #' @rdname bys_funcs
 #' @export
-bys_min <- function(by, val, na.rm = TRUE){
+bys_min <- function(val, by = NULL, na.rm = TRUE){
   val2 <- bys_val(val, by = by, from_last = FALSE, val = val)
   if(!na.rm){
     val2[
@@ -165,7 +180,7 @@ bys_min <- function(by, val, na.rm = TRUE){
 
 #' @rdname bys_funcs
 #' @export
-bys_max <- function(by, val, na.rm = TRUE){
+bys_max <- function(val, by = NULL, na.rm = TRUE){
   val2 <- bys_val(val, by = by, from_last = TRUE, val = val)
   if(!na.rm){
     val2[
@@ -177,11 +192,18 @@ bys_max <- function(by, val, na.rm = TRUE){
 
 #' @rdname bys_funcs
 #' @export
-bys_sum <- function(by, val, na.rm = TRUE){
-  by <- match(by, by[!duplicated(by)])
-  s_ord <- order(by)
-  by <- by[s_ord]
-  val <- val[s_ord]
+bys_sum <- function(val, by = NULL, na.rm = TRUE){
+  null.by <- is.null(by)
+  if(null.by){
+    by <- rep(1L, length(val))
+    s_ord <- seq_len(length(val))
+  }else{
+    by <- match(by, by[!duplicated(by)])
+    s_ord <- order(by, decreasing = FALSE, na.last = TRUE)
+
+    by <- by[s_ord]
+    val <- val[s_ord]
+  }
 
   if(na.rm){
     val[is.na(val)] <- 0
@@ -202,17 +224,27 @@ bys_sum <- function(by, val, na.rm = TRUE){
   prv_max.val <- c(0, max.val[lag_pos])
   max.val <- max.val - c(0, max.val[lag_pos])
   max.val <- rep(max.val, rp$lengths)
-  max.val <- max.val[order(s_ord)]
+  if(!null.by){
+    max.val <- max.val[order(s_ord)]
+  }
+
   return(max.val)
 }
 
 #' @rdname bys_funcs
 #' @export
-bys_prod <- function(by, val, na.rm = TRUE){
-  by <- match(by, by[!duplicated(by)])
-  s_ord <- order(by)
-  by <- by[s_ord]
-  val <- val[s_ord]
+bys_prod <- function(val, by = NULL, na.rm = TRUE){
+  null.by <- is.null(by)
+  if(null.by){
+    by <- rep(1L, length(val))
+    s_ord <- seq_len(length(val))
+  }else{
+    by <- match(by, by[!duplicated(by)])
+    s_ord <- order(by, decreasing = FALSE, na.last = TRUE)
+
+    by <- by[s_ord]
+    val <- val[s_ord]
+  }
 
   if(na.rm){
     val[is.na(val)] <- 1
@@ -233,17 +265,27 @@ bys_prod <- function(by, val, na.rm = TRUE){
   prv_max.val <- c(0, max.val[lag_pos])
   max.val <- max.val / c(1, max.val[lag_pos])
   max.val <- rep(max.val, rp$lengths)
-  max.val <- max.val[order(s_ord)]
+  if(!null.by){
+    max.val <- max.val[order(s_ord)]
+  }
+
   return(max.val)
 }
 
 #' @rdname bys_funcs
 #' @export
-bys_cummin <- function(by, val, na.rm = TRUE){
-  by <- match(by, by[!duplicated(by)])
-  s_ord <- order(by)
-  by <- by[s_ord]
-  val <- val[s_ord]
+bys_cummin <- function(val, by = NULL, na.rm = TRUE){
+  null.by <- is.null(by)
+  if(null.by){
+    by <- rep(1L, length(val))
+    s_ord <- seq_len(length(val))
+  }else{
+    by <- match(by, by[!duplicated(by)])
+    s_ord <- order(by, decreasing = FALSE, na.last = TRUE)
+
+    by <- by[s_ord]
+    val <- val[s_ord]
+  }
 
   indx <- which(!is.na(val))
   if(length(indx) == 0){
@@ -264,17 +306,27 @@ bys_cummin <- function(by, val, na.rm = TRUE){
   by <- ((max(by) + 1) - by) * faC
   val <- -(by + val)
   val <- abs(cummax(val)) - by
-  val <- val[order(s_ord)]
+  if(!null.by){
+    val <- val[order(s_ord)]
+  }
+
   return(val)
 }
 
 #' @rdname bys_funcs
 #' @export
-bys_cummax <- function(by, val, na.rm = FALSE){
-  by <- match(by, by[!duplicated(by)])
-  s_ord <- order(by)
-  by <- by[s_ord]
-  val <- val[s_ord]
+bys_cummax <- function(val, by = NULL, na.rm = FALSE){
+  null.by <- is.null(by)
+  if(null.by){
+    by <- rep(1L, length(val))
+    s_ord <- seq_len(length(val))
+  }else{
+    by <- match(by, by[!duplicated(by)])
+    s_ord <- order(by, decreasing = FALSE, na.last = TRUE)
+
+    by <- by[s_ord]
+    val <- val[s_ord]
+  }
 
   indx <- which(!is.na(val))
   if(length(indx) == 0){
@@ -296,17 +348,27 @@ bys_cummax <- function(by, val, na.rm = FALSE){
   by <- by * faC
   val <- by + val
   val <- cummax(val) - by
-  val <- val[order(s_ord)]
+  if(!null.by){
+    val <- val[order(s_ord)]
+  }
+
   return(val)
 }
 
 #' @rdname bys_funcs
 #' @export
-bys_cumsum <- function(by, val, na.rm = TRUE){
-  by <- match(by, by[!duplicated(by)])
-  s_ord <- order(by)
-  by <- by[s_ord]
-  val <- val[s_ord]
+bys_cumsum <- function(val, by = NULL, na.rm = TRUE){
+  null.by <- is.null(by)
+  if(null.by){
+    by <- rep(1L, length(val))
+    s_ord <- seq_len(length(val))
+  }else{
+    by <- match(by, by[!duplicated(by)])
+    s_ord <- order(by, decreasing = FALSE, na.last = TRUE)
+
+    by <- by[s_ord]
+    val <- val[s_ord]
+  }
 
   if(na.rm){
     val[is.na(val)] <- 0
@@ -326,17 +388,27 @@ bys_cumsum <- function(by, val, na.rm = TRUE){
   lag_pos <- 1:(length(max.val) - 1)
   prv_max.val <- c(0, max.val[lag_pos])
   cum.val <- cum.val - rep(prv_max.val, rp$lengths)
-  cum.val <- cum.val[order(s_ord)]
+  if(!null.by){
+    cum.val <- cum.val[order(s_ord)]
+  }
+
   return(cum.val)
 }
 
 #' @rdname bys_funcs
 #' @export
-bys_cumprod <- function(by, val, na.rm = TRUE){
-  by <- match(by, by[!duplicated(by)])
-  s_ord <- order(by)
-  by <- by[s_ord]
-  val <- val[s_ord]
+bys_cumprod <- function(val, by = NULL, na.rm = TRUE){
+  null.by <- is.null(by)
+  if(null.by){
+    by <- rep(1L, length(val))
+    s_ord <- seq_len(length(val))
+  }else{
+    by <- match(by, by[!duplicated(by)])
+    s_ord <- order(by, decreasing = FALSE, na.last = TRUE)
+
+    by <- by[s_ord]
+    val <- val[s_ord]
+  }
 
   if(na.rm){
     val[is.na(val)] <- 1
@@ -356,10 +428,80 @@ bys_cumprod <- function(by, val, na.rm = TRUE){
   lag_pos <- 1:(length(max.val) - 1)
   prv_max.val <- c(1, max.val[lag_pos])
   cum.val <- cum.val / rep(prv_max.val, rp$lengths)
-  cum.val <- cum.val[order(s_ord)]
+
+  if(!null.by){
+    cum.val <- cum.val[order(s_ord)]
+  }
+
   return(cum.val)
 }
 
+#' @rdname bys_funcs
+#' @export
+bys_lag <- function(val, by = NULL, n = 1){
+  null.by <- is.null(by)
+  if(null.by){
+    by <- rep(1L, length(val))
+    s_ord <- seq_len(length(val))
+  }else{
+    by <- match(by, by[!duplicated(by)])
+    s_ord <- order(by, decreasing = FALSE, na.last = TRUE)
 
+    by <- by[s_ord]
+    val <- val[s_ord]
+  }
 
+  v.pos <- length(val) - n
+  if(n > length(val)){
+    lag.pos <- rep(NA, length(val))
+  }else{
+    lag.pos <- 1:(length(val) - n)
+  }
 
+  lag.pos <- c(rep(NA, n), lag.pos)
+
+  l.by <- by[lag.pos]
+  val <- val[lag.pos]
+  val[by != l.by] <- NA
+
+  if(!null.by){
+    val <- val[order(s_ord)]
+  }
+
+  return(val)
+}
+
+#' @rdname bys_funcs
+#' @export
+bys_lead <- function(val, by = NULL, n = 1){
+  null.by <- is.null(by)
+  if(null.by){
+    by <- rep(1L, length(val))
+    s_ord <- seq_len(length(val))
+  }else{
+    by <- match(by, by[!duplicated(by)])
+    s_ord <- order(by, decreasing = FALSE, na.last = TRUE)
+
+    by <- by[s_ord]
+    val <- val[s_ord]
+  }
+
+  v.pos <- length(val) - n
+  if(n > length(val)){
+    lead.pos <- rep(NA, length(val))
+  }else{
+    lead.pos <- (n + 1):length(val)
+  }
+
+  lead.pos <- c(lead.pos, rep(NA, n))
+
+  l.by <- by[lead.pos]
+  val <- val[lead.pos]
+  val[by != l.by] <- NA
+
+  if(!null.by){
+    val <- val[order(s_ord)]
+  }
+
+  return(val)
+}

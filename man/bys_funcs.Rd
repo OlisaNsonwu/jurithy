@@ -16,35 +16,41 @@
 \alias{bys_cummax}
 \alias{bys_cumsum}
 \alias{bys_cumprod}
+\alias{bys_lag}
+\alias{bys_lead}
 \title{\code{bysort} in \code{R}}
 \usage{
 bys_count(by)
 
-bys_rank(..., by, from_last = FALSE)
+bys_rank(..., by = NULL, from_last = FALSE)
 
-bys_position(val, by, from_last = FALSE)
+bys_position(val, by = NULL, from_last = FALSE)
 
 bys_tot(by)
 
-bys_val(..., by, val, from_last = FALSE)
+bys_val(..., val, by = NULL, from_last = FALSE)
 
-bys_nval(..., by, val, from_last = FALSE, n = 1, et = TRUE)
+bys_nval(..., val, by = NULL, from_last = FALSE, n = 1, et = TRUE)
 
-bys_min(by, val, na.rm = TRUE)
+bys_min(val, by = NULL, na.rm = TRUE)
 
-bys_max(by, val, na.rm = TRUE)
+bys_max(val, by = NULL, na.rm = TRUE)
 
-bys_sum(by, val, na.rm = TRUE)
+bys_sum(val, by = NULL, na.rm = TRUE)
 
-bys_prod(by, val, na.rm = TRUE)
+bys_prod(val, by = NULL, na.rm = TRUE)
 
-bys_cummin(by, val, na.rm = TRUE)
+bys_cummin(val, by = NULL, na.rm = TRUE)
 
-bys_cummax(by, val, na.rm = FALSE)
+bys_cummax(val, by = NULL, na.rm = FALSE)
 
-bys_cumsum(by, val, na.rm = TRUE)
+bys_cumsum(val, by = NULL, na.rm = TRUE)
 
-bys_cumprod(by, val, na.rm = TRUE)
+bys_cumprod(val, by = NULL, na.rm = TRUE)
+
+bys_lag(val, by = NULL, n = 1)
+
+bys_lead(val, by = NULL, n = 1)
 }
 \arguments{
 \item{by}{Groups}
