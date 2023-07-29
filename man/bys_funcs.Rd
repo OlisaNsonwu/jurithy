@@ -24,7 +24,7 @@ bys_count(by)
 
 bys_rank(..., by = NULL, from_last = FALSE)
 
-bys_position(val, by = NULL, from_last = FALSE)
+bys_position(val, by = NULL, from_last = FALSE, ordered = TRUE)
 
 bys_tot(by)
 

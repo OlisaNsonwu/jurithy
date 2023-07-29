@@ -94,7 +94,7 @@ bys_rank <- function(..., by = NULL, from_last = FALSE){
 
 #' @rdname bys_funcs
 #' @export
-bys_position <- function(val, by = NULL, from_last = FALSE){
+bys_position <- function(val, by = NULL, from_last = FALSE, ordered = TRUE){
   if(!is.logical(from_last)) stop("`from_last` must be `TRUE` or `FALSE`!")
   null.by <- is.null(by)
   if(null.by){
@@ -108,11 +108,23 @@ bys_position <- function(val, by = NULL, from_last = FALSE){
   rp <- rle(by)
   x <- sequence(rp$lengths)
 
+  st <- by
   by <- diyar::combi(by, val[s_ord])
   rp <- rle(by)
   faC <- as.integer(log10(max(rp$lengths))) + 1L
   faC <- 10 ^ faC
-  x <- rep(x[!duplicated(by)] + (rp$lengths)/faC, rp$lengths)
+
+  if(!ordered){
+    x <- rep(
+      x[!duplicated(by)] + (rp$lengths)/faC,
+      rp$lengths)
+  }else{
+    x <- rep(
+      ((by[!duplicated(by)] - bys_min(by = st[!duplicated(by)], val = by[!duplicated(by)])) + 1L) + + (rp$lengths)/faC,
+      rp$lengths
+    )
+  }
+
   x <- x[order(s_ord)]
   return(x)
 }
