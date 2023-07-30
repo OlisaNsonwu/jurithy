@@ -111,7 +111,7 @@ bys_position <- function(val, by = NULL, from_last = FALSE, ordered = TRUE){
   st <- by
   by <- diyar::combi(by, val[s_ord])
   rp <- rle(by)
-  faC <- as.integer(log10(max(rp$lengths))) + 1L
+  faC <- as.integer(log10(max(rp$lengths, na.rm = TRUE))) + 1L
   faC <- 10 ^ faC
 
   if(!ordered){
@@ -315,7 +315,7 @@ bys_cummin <- function(val, by = NULL, na.rm = TRUE){
     val[is.na(val)] <- 0
   }
 
-  by <- ((max(by) + 1) - by) * faC
+  by <- ((max(by, na.rm = TRUE) + 1) - by) * faC
   val <- -(by + val)
   val <- abs(cummax(val)) - by
   if(!null.by){
