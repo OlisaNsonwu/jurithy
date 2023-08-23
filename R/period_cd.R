@@ -52,10 +52,18 @@ period_cd <- function(x, period = "fy"){
 #' @export
 cm_to_fm <- function(f){
   if(any(!nchar(f) %in% c(1:2, 6))) stop("Incorrect codes. See the output of `period_cd` for the required format!")
+  m6cd <- all(nchar(f) == 6)
   f <- as.numeric(f)
-  y <- as.integer(f/100)
-  m <- f - (y * 100)
+  if(m6cd){
+    y <- as.integer(f/100)
+    m <- f - (y * 100)
+  }else{
+    m <- f
+  }
   m2 <- c(10:12,1:9)[m]
+  if(!m6cd){
+    return(m2)
+  }
   x <- (y * 100) + m2
   lgk <- m2 >= 10
   x[lgk] <- ((y[lgk] - 1) * 100) + m2[lgk]
@@ -113,7 +121,7 @@ cm_to_cy <- function(f){
 #' cm_to_fy("201201")
 #' @export
 cm_to_fy <- function(f){
-  if(any(!nchar(f) %in% c(1:2, 6))) stop("Incorrect codes. See the output of `period_cd` for the required format!")
+  if(all(!nchar(f) %in% c(6))) stop("Incorrect codes. 6 Digit Code required!")
   as.integer(cm_to_fm(f)/100)
 }
 
@@ -174,10 +182,19 @@ cq_to_cy <- function(f){
 #' @export
 fm_to_cm <- function(f){
   if(any(!nchar(f) %in% c(1:2, 6))) stop("Incorrect codes. See the output of `period_cd` for the required format!")
+  m6cd <- all(nchar(f) == 6)
   f <- as.numeric(f)
-  y <- as.integer(f/100)
-  m <- f - (y * 100)
+  if(m6cd){
+    y <- as.integer(f/100)
+    m <- f - (y * 100)
+  }else{
+    m <- f
+  }
+
   m2 <- c(4:12,1:3)[m]
+  if(!m6cd){
+    return(m2)
+  }
   x <- (y * 100) + m2
   lgk <- m >= 10
 
@@ -209,11 +226,11 @@ fm_to_fq <- cm_to_cq
 #' @details
 #' \code{fm_to_cy()} - Convert financial month codes to calendar year codes
 #' @examples
-#' cm_to_cy("201204")
-#' cm_to_cy("201201")
+#' fm_to_cy("201204")
+#' fm_to_cy("201201")
 #' @export
 fm_to_cy <- function(f){
-  fm_to_cm(cm_to_cy(f))
+  cm_to_cy(fm_to_cm(f))
 }
 
 #' @rdname period_cd
