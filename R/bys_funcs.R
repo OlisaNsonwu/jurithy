@@ -309,13 +309,13 @@ bys_cummin <- function(val, by = NULL, na.rm = TRUE){
   }
 
   faC <- as.integer(log10(RNG[[2]] - RNG[[1]])) + 1L
-  faC <- 10 ^ faC
+  faC <- as.integer(10L ^ faC)
 
   if(na.rm){
-    val[is.na(val)] <- 0
+    val[is.na(val)] <- 0L
   }
 
-  by <- ((max(by, na.rm = TRUE) + 1) - by) * faC
+  by <- ((max(by, na.rm = TRUE) + 1L) - by) * faC
   val <- -(by + val)
   val <- abs(cummax(val)) - by
   if(!null.by){
@@ -350,11 +350,11 @@ bys_cummax <- function(val, by = NULL, na.rm = FALSE){
   }
 
   if(na.rm){
-    val[is.na(val)] <- 0
+    val[is.na(val)] <- 0L
   }
 
   faC <- as.integer(log10(RNG[[2]] - RNG[[1]])) + 1L
-  faC <- 10 ^ faC
+  faC <- as.integer(10L ^ faC)
 
 
   by <- by * faC
