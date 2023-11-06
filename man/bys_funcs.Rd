@@ -3,9 +3,9 @@
 \name{bys_funcs}
 \alias{bys_funcs}
 \alias{bys_count}
+\alias{bys_tot}
 \alias{bys_rank}
 \alias{bys_position}
-\alias{bys_tot}
 \alias{bys_val}
 \alias{bys_nval}
 \alias{bys_min}
@@ -18,19 +18,19 @@
 \alias{bys_cumprod}
 \alias{bys_lag}
 \alias{bys_lead}
-\title{\code{bysort} in \code{R}}
+\title{Vectorised approach to group operations.}
 \usage{
 bys_count(by)
+
+bys_tot(by)
 
 bys_rank(..., by = NULL, from_last = FALSE)
 
 bys_position(val, by = NULL, from_last = FALSE, ordered = TRUE)
 
-bys_tot(by)
-
 bys_val(..., val, by = NULL, from_last = FALSE)
 
-bys_nval(..., val, by = NULL, from_last = FALSE, n = 1, et = TRUE)
+bys_nval(..., val, by = NULL, from_last = FALSE, n = 1, nmax = FALSE)
 
 bys_min(val, by = NULL, na.rm = TRUE)
 
@@ -53,50 +53,33 @@ bys_lag(val, by = NULL, n = 1)
 bys_lead(val, by = NULL, n = 1)
 }
 \arguments{
-\item{by}{Groups}
+\item{by}{\code{[atomic]}. Groups.}
 
-\item{...}{Sort levels. Passed to \code{order()}}
+\item{...}{\code{[atomic]}. Sort levels}
 
-\item{from_last}{Sort order. Passed to \code{order()}}
+\item{from_last}{\code{[logical]} Sort order - \code{TRUE} (descending) or \code{FALSE} (ascending).}
 
-\item{val}{Value}
+\item{val}{\code{[atomic]}. Value}
+
+\item{ordered}{If \code{TRUE}, values are sequential.}
+
+\item{n}{\code{[integer]} Position.}
+
+\item{nmax}{\code{[logical]} If \code{TRUE}, use \code{length([by])} when \code{n} is greater than the number of records in a group.}
+
+\item{na.rm}{If \code{TRUE}, remove \code{NA} values}
 }
 \value{
-Atomic vector
+\code{[atomic]}
 }
 \description{
-R-styled versions of \code{STATA}'s \code{bysort} command.
-}
-\details{
-\bold{\code{bys_rank}} - Sort order of each record in a group
-\itemize{
-\item \bold{\code{STATA}} - \bold{\code{bysort group_var (sort_vars) : gen x = _n }}
-\item \bold{\code{R}} - \bold{\code{bys_rank(sort_vars, by = group_var)}}
-Use \code{from_last} to rank from in ascending (\code{FALSE}) or descending order (\code{TRUE})
-}
-
-\bold{\code{bys_tot}} - Number of observations in a group of records
-\itemize{
-\item \bold{\code{STATA}} - \bold{\code{bysort group_var : gen x = _N }}
-\item \bold{\code{R}} - \bold{\code{bys_tot(by = group_var)}}
-}
-
-\bold{\code{bys_val}} - First or last observation of \bold{\code{`val`}} within a group of records
-
-\itemize{
-\item \bold{\code{STATA}} - \bold{\code{bysort group_var (sort_vars) : gen val_var = val_var[1]}}
-\item \bold{\code{R}} - \bold{\code{bys_val(sort_vars, by = group_var, val = val_var)}}
-
-\item \bold{\code{STATA}} - \bold{\code{bysort group_var (sort_vars) : gen val_var = val_var[_N]}}
-\item \bold{\code{R}} - \bold{\code{bys_val(sort_vars, by = group_var, val = val_var, from_last = TRUE)}}
-}
-
-\bold{\code{bys_func}} - Apply a function to group of records.
+Vectorised approach to group operations.
 }
 \examples{
 x <- data.frame(
   group = c(2, 2, 1, 2, 1, 1, 1, 2, 1, 1),
   value = c(13, 14, 20, 9, 2, 1, 8, 18, 3, 17))
+
 bys_count(x$group)
 bys_position(x$value, by = x$group, from_last = TRUE)
 bys_rank(by = x$group, val = x$value, from_last = TRUE)
@@ -110,7 +93,6 @@ bys_cummin(by = x$group, val = x$value)
 bys_cummax(by = x$group, val = x$value)
 bys_cumsum(by = x$group, val = x$value)
 bys_cumprod(by = x$group, val = x$value)
-bys_count(by = cat)
-bys_val(val, by = cat, val=val)
-bys_val(val, by = cat, val=val, from_last = TRUE)
+bys_lag(by = x$group, val = x$value)
+bys_lead(by = x$group, val = x$value)
 }
