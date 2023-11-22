@@ -1,7 +1,7 @@
 Package: jurithy
 Type: Package
 Title: jurithy
-Version: 0.1.0.9014
+Version: 0.1.0.9015
 Author: Olisaeloka Nsonwu
 Maintainer: Olisa <yourself@somewhere.net>
 Description: Convenience functions
@@ -12,4 +12,5 @@ RoxygenNote: 7.2.3
 Imports:
   dplyr,
   janitor,
-  stats
+  stats,
+  diyar
