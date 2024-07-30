@@ -240,7 +240,7 @@ fm_to_cy <- function(f){
 #' fm_to_fy("201204")
 #' fm_to_fy("201201")
 #' @export
-fm_to_fy <- cm_to_fy
+fm_to_fy <- cm_to_cy
 
 #' @rdname period_cd
 #' @details
